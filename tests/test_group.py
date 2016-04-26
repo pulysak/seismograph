@@ -97,8 +97,11 @@ class TestFieldsGroup(unittest.TestCase):
         self.test_proxy = mock.MagicMock()
         self.test_proxy.is_web_element = True
         self.test_proxy.browser = 'some_browser'
-        self.test_weight = 'test_weight'
+        self.test_weight = 1
         self.obj = FieldsGroup(self.test_proxy, weight=self.test_weight)
+        self.field_FormField = FormField('test_field', selector=dict(), value='test_value', weight=1)
+        self.obj._FieldsGroup__fields.append(mock.MagicMock())
+        self.obj.test_form = self.field_FormField
 
     def test_cache(self):
         self.assertEqual(self.obj.cache, pageobject.PageCache())
@@ -138,12 +141,15 @@ class TestFieldsGroup(unittest.TestCase):
         self.assertEqual(self.obj._FieldsGroup__proxy, test_proxy)
 
     def test_add_field(self):
-        test_field = mock.Mock()
-        test_field2 = mock.Mock()
-        test_field.weight = 1
-        test_field2.weight = 2
-        self.obj._FieldsGroup__fields.append(test_field)
+        test_field = FormField('name', selector=dict(), weight=0)
         self.obj.add_field('test_name', test_field)
-        self.assertEqual(self.obj._FieldsGroup__fields[0], test_field)
+        self.assertEqual(self.obj._FieldsGroup__fields[0].name, test_field.name)
 
+    def test_update(self):
+        self.obj.update(test_form='new_test_value')
+        self.assertEqual(self.obj.test_form.value, 'new_test_value')
+        with self.assertRaises(LookupError):
+            self.obj.update(not_exist_field='new_test_value')
 
+    def test_fill(self):
+        pass

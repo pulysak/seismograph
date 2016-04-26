@@ -1,6 +1,6 @@
 import unittest
 from seismograph.ext.selenium.forms.fields import SimpleFieldInterface, selector, FormField, RadioButton, \
-    fill_field_handler
+    fill_field_handler, clear_field_handler
 import mock
 
 
@@ -76,13 +76,6 @@ class TestFormField(unittest.TestCase):
                         invalid_value=callable_test_function)
         obj.value()
         self.assertEqual(True, obj.value.called)
-
-
-    def test_we(self):
-        obj = FormField(self.test_name, selector=self.selector, group=self.test_group)
-        obj.__tag__= 'some_tag'
-        obj.we
-
 
 
 if __name__ == '__main__':
