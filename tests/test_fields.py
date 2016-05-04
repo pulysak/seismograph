@@ -86,7 +86,7 @@ class TestFormField(unittest.TestCase):
 
     def test_weight_without_value(self):
         obj = FormField(self.test_name, selector=self.selector)
-        self.assertEqual(obj.weight, None)
+        self.assertIsNone(obj.weight)
 
     def test_selector(self):
         obj = FormField(self.test_name, selector=self.selector)
@@ -95,15 +95,15 @@ class TestFormField(unittest.TestCase):
     def test_call(self):
         obj = FormField(self.test_name, selector=self.selector)
         obj(self.test_group)
-        self.assertEqual(obj.value, None)
-        self.assertEqual(obj.invalid_value, None)
+        self.assertIsNone(obj.value)
+        self.assertIsNone(obj.invalid_value)
 
     def test_call_with_value_and_invalid_value(self):
         callable_test_function = mock.Mock(return_value='return_value')
         obj = FormField(self.test_name, selector=self.selector, value=callable_test_function,
                         invalid_value=callable_test_function)
         obj.value()
-        self.assertEqual(True, obj.value.called)
+        self.assertTrue(obj.value.called)
 
     def test_fill_field_handler_value_none(self):
         f = mock.MagicMock()
@@ -111,7 +111,7 @@ class TestFormField(unittest.TestCase):
         fake_arg.value = None
         f.__name__ = 'test_function'
         f = fill_field_handler(f)
-        self.assertEqual(f(fake_arg), None)
+        self.assertIsNone(f(fake_arg))
 
     def test_fill_field_handler_with_value(self):
         f = mock.MagicMock()
@@ -120,8 +120,8 @@ class TestFormField(unittest.TestCase):
         f.__name__ = 'test_function'
         f = fill_field_handler(f)
         f(fake_arg)
-        self.assertEqual(fake_arg.before_fill_trigger.called, True)
-        self.assertEqual(fake_arg.after_fill_trigger.called, True)
+        self.assertTrue(fake_arg.before_fill_trigger.called)
+        self.assertTrue(fake_arg.after_fill_trigger.called)
 
     def test_clear_field_handler(self):
         f = mock.MagicMock()
@@ -129,7 +129,7 @@ class TestFormField(unittest.TestCase):
         fake_arg = mock.MagicMock()
         f = clear_field_handler(f)
         f(fake_arg)
-        self.assertEqual(fake_arg.group.fill_memo.remove.called, True)
+        self.assertTrue(fake_arg.group.fill_memo.remove.called)
 
 
 class TestCheckbox(unittest.TestCase):
@@ -166,7 +166,7 @@ class TestCheckbox(unittest.TestCase):
             obj = Checkbox(self.test_name, selector=self.test_selector, group=self.test_group)
             obj.value = 'test_value'
             obj.fill()
-            self.assertEqual(mock_obj.click.called, True)
+            self.assertTrue(mock_obj.click.called)
 
     def test_clear(self):
         with mock.patch.object(Checkbox, 'we') as mock_we:
@@ -176,7 +176,7 @@ class TestCheckbox(unittest.TestCase):
             mock_we.__get__ = mock.Mock(return_value=mock_obj)
             obj = Checkbox(self.test_name, selector=self.test_selector, group=self.test_group)
             obj.clear()
-            self.assertEqual(mock_obj.click.called, True)
+            self.assertTrue(mock_obj.click.called)
 
     def test_not_clear(self):
         with mock.patch.object(Checkbox, 'we') as mock_we:
@@ -186,7 +186,7 @@ class TestCheckbox(unittest.TestCase):
             mock_we.__get__ = mock.Mock(return_value=mock_obj)
             obj = Checkbox(self.test_name, selector=self.test_selector, group=self.test_group)
             obj.clear()
-            self.assertEqual(mock_obj.click.called, False)
+            self.assertFalse(mock_obj.click.called)
 
 
 class TestRadioButton(unittest.TestCase):
@@ -198,7 +198,7 @@ class TestRadioButton(unittest.TestCase):
     def test_not_fill(self):
         obj = RadioButton(self.test_name, selector=self.test_selector, group=self.test_group)
         obj.value = None
-        self.assertEqual(obj.fill(value=''), False)
+        self.assertFalse(obj.fill(value=''))
 
     def test_fill_not_changed(self):
         with mock.patch.object(Checkbox, 'we') as mock_we:
@@ -207,7 +207,7 @@ class TestRadioButton(unittest.TestCase):
             mock_we.__get__ = mock.Mock(return_value=mock_obj)
             obj = RadioButton(self.test_name, selector=self.test_selector, group=self.test_group)
             obj.fill(value='test_value')
-            self.assertEqual(obj.fill(value=''), False)
+            self.assertFalse(obj.fill(value=''))
 
     def test_fill_changed(self):
         with mock.patch.object(Checkbox, 'we') as mock_we:
@@ -216,7 +216,7 @@ class TestRadioButton(unittest.TestCase):
             mock_we.__get__ = mock.Mock(return_value=mock_obj)
             obj = RadioButton(self.test_name, selector=self.test_selector, group=self.test_group)
             obj.fill(value='test_value')
-            self.assertEqual(obj.fill(value=''), False)
+            self.assertFalse(obj.fill(value=''))
 
 
 class TestSelect(unittest.TestCase):
@@ -251,7 +251,7 @@ class TestSelect(unittest.TestCase):
             mock_we.__get__ = mock.Mock(return_value=mock_obj)
             obj = Select(self.test_name, selector=self.selector, group=self.test_group)
             obj.fill(value='test_value')
-            self.assertEqual(final_mock.click.called, True)
+            self.assertTrue(final_mock.click.called)
 
 if __name__ == '__main__':
     unittest.main()

@@ -109,7 +109,7 @@ class TestFieldsGroup(unittest.TestCase):
     def test_we(self):
         self.assertEqual(self.obj.we, self.test_proxy)
         self.test_proxy.is_web_element = False
-        self.assertEqual(self.obj.we, None)
+        self.assertIsNone(self.obj.we)
 
     def test_browser(self):
         self.assertEqual(self.obj.browser, self.test_proxy.browser)
@@ -127,7 +127,7 @@ class TestFieldsGroup(unittest.TestCase):
         test_area = mock.MagicMock(QueryObject)
         self.obj.__area__ = test_area
         self.obj.area
-        self.assertEqual(True, test_area.called)
+        self.assertTrue(test_area.called)
 
     def test_weight(self):
         self.assertEqual(self.obj.weight, self.test_weight)
