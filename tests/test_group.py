@@ -151,5 +151,12 @@ class TestFieldsGroup(unittest.TestCase):
         with self.assertRaises(LookupError):
             self.obj.update(not_exist_field='new_test_value')
 
-    def test_fill(self):
-        pass
+    def test_add_subgroup_false(self):
+        class FakeClass():
+            pass
+        with self.assertRaises(AssertionError):
+            self.obj.add_subgroup(cls=FakeClass, name='test_name')
+
+
+
+
