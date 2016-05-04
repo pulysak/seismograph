@@ -206,7 +206,6 @@ class TestRadioButton(unittest.TestCase):
             mock_obj.is_selected = mock.MagicMock(return_value=True)
             mock_we.__get__ = mock.Mock(return_value=mock_obj)
             obj = RadioButton(self.test_name, selector=self.test_selector, group=self.test_group)
-            obj.fill(value='test_value')
             self.assertFalse(obj.fill(value=''))
 
     def test_fill_changed(self):
@@ -215,8 +214,7 @@ class TestRadioButton(unittest.TestCase):
             mock_obj.is_selected = mock.MagicMock(return_value=False)
             mock_we.__get__ = mock.Mock(return_value=mock_obj)
             obj = RadioButton(self.test_name, selector=self.test_selector, group=self.test_group)
-            obj.fill(value='test_value')
-            self.assertFalse(obj.fill(value=''))
+            self.assertTrue(obj.fill(value='test_value'))
 
 
 class TestSelect(unittest.TestCase):
