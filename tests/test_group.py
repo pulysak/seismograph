@@ -100,8 +100,9 @@ class TestFieldsGroup(unittest.TestCase):
         self.test_weight = 1
         self.obj = FieldsGroup(self.test_proxy, weight=self.test_weight)
         self.field_FormField = FormField('test_field', selector=dict(), value='test_value', weight=1)
-        self.obj._FieldsGroup__fields.append(mock.MagicMock())
         self.obj.test_form = self.field_FormField
+        self.test_field_group = mock.Mock(spec=FieldsGroup)
+        self.obj.test_field_group = self.test_field_group
 
     def test_cache(self):
         self.assertEqual(self.obj.cache, pageobject.PageCache())
@@ -145,11 +146,15 @@ class TestFieldsGroup(unittest.TestCase):
         self.obj.add_field('test_name', test_field)
         self.assertEqual(self.obj._FieldsGroup__fields[0].name, test_field.name)
 
-    def test_update(self):
+    def test_update_field(self):
         self.obj.update(test_form='new_test_value')
         self.assertEqual(self.obj.test_form.value, 'new_test_value')
         with self.assertRaises(LookupError):
             self.obj.update(not_exist_field='new_test_value')
+
+    def test_update_field_group(self):
+        self.obj.update(test_field_group=dict())
+        self.assertTrue(self.test_field_group.update.called)
 
     def test_add_subgroup_false(self):
         class FakeClass():
@@ -157,6 +162,39 @@ class TestFieldsGroup(unittest.TestCase):
         with self.assertRaises(AssertionError):
             self.obj.add_subgroup(cls=FakeClass, name='test_name')
 
+    def test_fill(self):
+        test_exclude = []
+        test_field1 = mock.MagicMock()
+        test_field2 = mock.MagicMock()
+        test_field3 = mock.MagicMock()
+        test_field4 = mock.MagicMock()
+        self.obj.fill_memo.update([test_field4])
+        test_exclude.append(test_field1)
+        self.obj._FieldsGroup__fields.append(test_field1)
+        self.obj._FieldsGroup__fields.append(test_field2)
+        self.obj._FieldsGroup__fields.append(test_field3)
+        self.obj._FieldsGroup__fields.append(test_field4)
+        self.obj.fill(test_exclude)
+        self.assertTrue(test_field2.fill.called)
+        self.assertTrue(test_field3.fill.called)
+        self.assertFalse(test_field1.fill.called)
+        self.assertFalse(test_field4.fill.called)
+        self.obj._FieldsGroup__fields = []
 
+    def test_fill_parent(self):
+        parent = mock.Mock()
+        obj = FieldsGroup(self.test_proxy, weight=self.test_weight, parent=parent)
+        obj.fill()
+        self.assertTrue(parent.fill_memo.add.called)
 
-
+    def test_clear(self):
+        test_field1 = mock.MagicMock()
+        test_field2 = mock.MagicMock()
+        test_field3 = mock.MagicMock()
+        self.obj._FieldsGroup__fields.append(test_field1)
+        self.obj._FieldsGroup__fields.append(test_field2)
+        self.obj._FieldsGroup__fields.append(test_field3)
+        self.obj.clear()
+        self.assertTrue(test_field1.clear.called)
+        self.assertTrue(test_field2.clear.called)
+        self.assertTrue(test_field3.clear.called)
